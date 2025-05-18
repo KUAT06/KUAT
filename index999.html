@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <title>Онлайн оқулық және тест – Қазақстан тарихы, Информатика, Биология, Математика</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+    header {
+      background-color: #2e7d32;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f4f4f4;
+    }
+    .auth-box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 320px;
+    }
+    .auth-box h2 {
+      text-align: center;
+      color: #2e7d32;
+      margin-top: 0; /* Added to remove extra space */
+    }
+    .auth-box input, .auth-box button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box; /* Added for consistency */
+    }
+    .auth-box button {
+      background: #2e7d32;
+      color: white;
+      border: none;
+      cursor: pointer; /* Added for better UX */
+    }
+    .auth-box button:hover {
+      background: #1b5e20;
+    }
+    .tab-switch {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px; /* Increased margin */
+    }
+    .tab-switch button {
+      width: 48%; /* Adjusted width for better fit */
+      background-color: #eee; /* Lighter default background */
+      color: black;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px; /* Consistent font size */
+    }
+    .tab-switch .active {
+      background-color: #2e7d32;
+      color: white;
+    }
+    .profile {
+      background: #e0f2f1;
+      padding: 15px; /* Increased padding */
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid #b2dfdb; /* Added subtle border */
+    }
+    .question {
+      margin-bottom: 20px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .question p strong {
+        color: #333; /* Darker question text */
+    }
+    .question label {
+        display: block; /* Options on new lines */
+        margin-bottom: 8px; /* Space between options */
+        cursor: pointer;
+    }
+    .question input[type="radio"] {
+        margin-right: 8px;
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+      padding: 15px; /* Increased padding */
+      border-radius: 5px;
+      text-align: center; /* Center result text */
+    }
+    .result.success {
+      background-color: #c8e6c9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7; /* Added border */
+    }
+    .result.fail {
+      background-color: #ffcdd2;
+      color: #c62828;
+      border: 1px solid #ef9a9a; /* Added border */
+    }
+    .tabs, .subject-tabs, .form-tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 25px; /* Increased margin */
+      margin-top: 20px;
+      flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
+    }
+    .tabs button, .subject-tabs button, .form-tabs button {
+      padding: 12px 18px; /* Adjusted padding */
+      width: auto;
+      flex-grow: 1;
+      margin: 5px; /* Add small margin for wrapping */
+      background-color: #ddd; /* Slightly darker default */
+      color: black;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s ease; /* Smooth transition */
+    }
+    .tabs button:hover, .subject-tabs button:hover, .form-tabs button:hover {
+        background-color: #ccc; /* Hover effect */
+    }
+    .tabs .active, .subject-tabs .active, .form-tabs .active {
+      background-color: #2e7d32;
+      color: white;
+    }
+    .tabs .active:hover, .subject-tabs .active:hover, .form-tabs .active:hover {
+        background-color: #1b5e20; /* Darker hover for active */
+    }
+    .form-section {
+      margin-top: 20px; /* Adjusted margin */
+      background: #fff;
+      border-radius: 10px;
+      padding: 25px; /* Increased padding */
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+    .form-section h2 {
+        margin-top: 0; /* Remove extra space for h2 */
+        color: #2e7d32; /* Consistent heading color */
+    }
+    .form-section label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px; /* Increased margin */
+      color: #333; /* Darker label text */
+    }
+    .form-section input[type="text"], .form-section textarea {
+      width: 100%;
+      margin-top: 5px;
+      margin-bottom: 20px; /* Increased margin */
+      padding: 10px; /* Increased padding */
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+    .form-section textarea {
+      resize: vertical;
+      min-height: 100px; /* Increased min-height */
+      max-height: 250px; /* Increased max-height */
+    }
+    .form-section button {
+      background: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 35px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .form-section button:hover {
+      background: #1b5e20;
+    }
+    .form-success {
+      margin-top: 18px;
+      color: #2e7d32;
+      background: #e1ffe4;
+      border-radius: 6px;
+      padding: 10px 15px; /* Adjusted padding */
+      font-weight: bold;
+      display: inline-block;
+      border: 1px solid #a5d6a7; /* Added border */
+    }
+    #history h3, #history h4 {
+        color: #2e7d32; /* Consistent heading color */
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    #history ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    #history li {
+        background-color: #f9f9f9;
+        border: 1px solid #eee;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+    }
+    #history li strong { /* For question text in form history */
+        color: #555;
+    }
+    #quizSection > section, #quizSection > .form-tabs { /* Add spacing for sections within quiz area */
+        margin-bottom: 20px;
+    }
+    #subjectText p {
+        line-height: 1.6; /* Improved readability for textbook */
+        margin-bottom: 1em;
+    }
+  </style>
+</head>
+<body>
+<div id="authSection" class="auth-container">
+  <div class="auth-box">
+    <div class="tab-switch">
+      <button id="loginTab" class="active" onclick="showAuthTab('login')">Кіру</button>
+      <button id="registerTab" onclick="showAuthTab('register')">Тіркелу</button>
+    </div>
+    <div id="loginForm">
+      <h2>Кіру</h2>
+      <input type="text" id="loginUsername" placeholder="Атыңыз">
+      <input type="password" id="loginPassword" placeholder="Құпия сөз">
+      <button onclick="login()">Кіру</button>
+    </div>
+    <div id="registerForm" style="display:none">
+      <h2>Тіркелу</h2>
+      <input type="text" id="regUsername" placeholder="Атыңыз">
+      <input type="password" id="regPassword" placeholder="Құпия сөз">
+      <input type="password" id="regConfirm" placeholder="Құпия сөзді қайталаңыз">
+      <button onclick="register()">Тіркелу</button>
+    </div>
+  </div>
+</div>
+
+<div id="mainSection" style="display:none">
+  <header>
+    <h1 id="subjectTitle">Қазақ хандығы</h1>
+  </header>
+  <div class="container">
+    <div class="subject-tabs">
+      <button id="historySubject" class="active" onclick="switchSubject('history')">Қазақстан тарихы</button>
+      <button id="infSubject" onclick="switchSubject('informatics')">Информатика</button>
+      <button id="bioSubject" onclick="switchSubject('biology')">Биология</button>
+      <button id="mathSubject" onclick="switchSubject('mathematics')">Математика</button>
+    </div>
+    <div class="tabs">
+      <button id="profileTab" class="active" onclick="showTab('profile')">Профиль</button>
+      <button id="quizTab" onclick="showTab('quiz')">Тест/Анкета</button>
+    </div>
+
+    <div id="profileSection">
+      <div class="profile" id="profileInfo"></div>
+      <div id="history"></div> 
+    </div>
+
+    <div id="quizSection" style="display:none">
+      <section>
+        <h2>Оқулық</h2>
+        <div id="subjectText"></div>
+      </section>
+      <div class="form-tabs">
+        <button id="quizTestTab" class="active" onclick="showFormTab('quiz')">Тест</button>
+        <button id="quizFormTab" onclick="showFormTab('form')">Анкета (еркін жауап)</button>
+      </div>
+      <section id="quizTestSection">
+        <h2>Тест</h2>
+        <form id="quizForm"></form>
+        <button type="button" onclick="checkAnswers()" style="margin-top: 15px; padding: 10px 20px; font-size: 16px; background-color: #2e7d32; color: white; border: none; border-radius: 5px; cursor: pointer;">Жауаптарды тексеру</button>
+        <div id="result" class="result" style="display:none;"></div>
+      </section>
+      <section id="quizFormSection" style="display:none">
+        <div class="form-section">
+          <h2>Анкета</h2> 
+          <form id="openForm">
+            <div id="openFormQuestions"></div>
+            <button type="button" onclick="submitOpenForm()">Жауап жіберу</button>
+            <div id="formSuccess" class="form-success" style="display:none;">Жауаптарыңыз сәтті жіберілді!</div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Тексты для всех 4 предметов
+  const historyText = `
+    <p><strong>Қазақ хандығы:</strong> Қазақ хандығы — XV ғасырдың ортасында (1465 жылы) Керей мен Жәнібек сұлтандардың басшылығымен құрылған түркі тілдес халықтардың алғашқы ұлттық мемлекеті. Оның құрылу мақсаты — қазақ халқының этникалық аумағын біріктіру және тәуелсіздік алу еді. Қазақ хандығының алғашқы астанасы Шу мен Талас өңіріндегі Қозыбасы мекені болды. Мемлекеттің дамуы барысында Қасым хан, Хақназар хан, Тәуке хан сияқты билеушілер елді нығайтты және сыртқы қауіптерге төтеп берді. Қазақ хандығының құрылуы қазақ халқының біртұтас ұлт ретінде қалыптасуына негіз болды.</p>
+    <p>Қазақ хандығы — XV ғасырдың ортасында қазақ халқының өз алдына жеке мемлекет болып құрылуының нәтижесі. 1465 жылы Керей мен Жәнібек сұлтандар Моғолстан ханы Есенбұға ханның қолдауымен Шу мен Талас өзендері бойында дербес хандық құрды. Бұл оқиға қазақ халқының саяси тұрғыдан бірігуінің негізін қалады. Қазақ хандығы құрылғаннан кейін елдің аумағы кеңейіп, ұлттық бірлік пен тәуелсіздік жолындағы күрестер жалғасты. Қазақ хандығының құрылуы — қазақ мемлекеттілігінің бастауы ретінде тарихта маңызды орын алады.</p>
+    <p>Қазақ хандығының басты мақсаты – көшпелі қазақ рулары мен тайпаларын біріктіріп, орталықтандырылған мемлекет құру болды. Хандар билікті нығайту үшін ру басыларымен ақылдаса отырып, ішкі тұрақтылықты сақтауға тырысты. Сонымен қатар, көрші мемлекеттермен — Ноғай ордасы, Моғолстан, Шайбани әулеті және кейіннен Ресеймен — қарым-қатынас орнатып, кейде бейбіт, кейде соғыс арқылы өз шекарасын кеңейтті. Хандар сыртқы қауіптерге қарсы тұру үшін әскери құрылымды дамытып, ел бірлігін сақтауға күш салды. Бұл саясат қазақ халқының этникалық тұтастығы мен мәдени бірегейлігін қалыптастыруда маңызды рөл атқарды.</p>
+    <p>Қазақ хандығының ең көрнекті хандарының бірі — Қасым хан (1511–1523). Оның билік құрған тұсында хандықтың шекарасы кеңейіп, халық саны миллионнан асып, халықаралық деңгейде танымал болды. Қасым хан мемлекетті басқарудың жаңа негіздерін енгізіп, «Қасым ханның қасқа жолы» деп аталатын заңдар жинағын жасап шығарды. Бұл заңдар жүйесі билік, жер дауы, қылмыс, неке және әскери міндеттер сияқты негізгі салаларды қамтыды. Қасым ханның реформалары мемлекеттің ішкі тұрақтылығын нығайтып, халық арасында әділдік пен тәртіп орнатуға ықпал етті. Ол тек мықты қолбасшы ғана емес, дана саясаткер ретінде де тарихта мәңгі қалды.</p>
+  `;
+
+  const historyQuiz = [
+    {q:"Қазақ хандығы қай ғасырда құрылды?", a:"XV ғасыр", options:["XIV ғасыр", "XV ғасыр", "XVI ғасыр"]},
+    {q:"Қазақ хандығы қай жылы құрылды?", a:"1465", options:["1456", "1465", "1501"]},
+    {q:"Қазақ хандығының негізін қалаушылар?", a:"Керей мен Жәнібек", options:["Хақназар мен Тәуке", "Керей мен Жәнібек", "Қасым мен Есім"]},
+    {q:"Қазақ хандығының алғашқы астанасы қай жер?", a:"Қозыбасы", options:["Тараз", "Сығанақ", "Қозыбасы"]},
+    {q:"Қазақ хандығының басты мақсаты не болды?", a:"Қазақ рулары мен тайпаларын біріктіру", options:["Сауда орталығы құру", "Қазақ рулары мен тайпаларын біріктіру", "Қолөнерді дамыту"]},
+    {q:"Қазақ хандығы құрылуына қолдау көрсеткен Моғолстан ханы?", a:"Есенбұға", options:["Абд-ар-Рашид", "Есенбұға", "Мұхаммед"]},
+    {q:"Қазақ хандығы құрылуында қай өзендер маңында хандық құрылды?", a:"Шу мен Талас", options:["Сырдария мен Іле", "Шу мен Талас", "Ертіс пен Есіл"]},
+    {q:"Қазақ хандығының ірі хандарының бірі?", a:"Қасым хан", options:["Абылай хан", "Қасым хан", "Әз-Тәуке хан"]},
+    {q:"Қасым ханның билік құрған жылдары?", a:"1511–1523", options:["1465–1480", "1511–1523", "1538–1580"]},
+    {q:"Қасым ханның заңы қалай аталды?", a:"Қасым ханның қасқа жолы", options:["Жеті жарғы", "Қасым ханның қасқа жолы", "Тәуке ханның толғауы"]},
+    {q:"Қасым ханның реформалары неге ықпал етті?", a:"Ішкі тұрақтылық пен әділдікке", options:["Тек саудаға", "Ішкі тұрақтылық пен әділдікке", "Тек салық жинауға"]},
+    {q:"Қазақ хандығының көрші елдермен қарым-қатынасы қандай болды?", a:"Бейбіт және соғыс", options:["Тек соғыс", "Бейбіт және соғыс", "Тек бейбіт"]},
+    {q:"Қазақ хандығының этникалық тұтастығы неден көрінеді?", a:"Көшпелі қазақ рулары мен тайпаларының бірігуі", options:["Тек орыс халқымен қосылу", "Көшпелі қазақ рулары мен тайпаларының бірігуі", "Тек сауда арқылы"]},
+    {q:"Қазақ хандығының алғашқы кеңейген кезі қай ханның тұсында болды?", a:"Қасым хан", options:["Жәнібек хан", "Қасым хан", "Тәуке хан"]},
+    {q:"Қазақ хандығының басты сыртқы қауіптері?", a:"Ноғай ордасы, Моғолстан, Шайбани әулеті", options:["Қытай", "Ноғай ордасы, Моғолстан, Шайбани әулеті", "Парсы"]},
+    {q:"Қазақ хандығының құрылуы қазақ халқы үшін нені білдірді?", a:"Ұлттық бірлік пен тәуелсіздік", options:["Салықтың өсуі", "Ұлттық бірлік пен тәуелсіздік", "Жаңа дін"]},
+    {q:"Хандар билікті нығайту үшін не істеді?", a:"Ру басыларымен ақылдасты", options:["Тек салық жинады", "Ру басыларымен ақылдасты", "Сауда жасады"]},
+    {q:"Қасым хан қандай саясаткер ретінде есте қалды?", a:"Дана саясаткер", options:["Тек жауынгер", "Дана саясаткер", "Тек заң шығарушы"]},
+    {q:"Қазақ хандығының заң жүйесі нені қамтыды?", a:"Билік, жер дауы, қылмыс, неке, әскери міндет", options:["Тек қылмыс", "Билік, жер дауы, қылмыс, неке, әскери міндет", "Тек жер дауы"]},
+    {q:"Қазақ хандығы құрылуынан кейін қандай өзгеріс болды?", a:"Аумағы кеңейді, ұлттық бірлік күшейді", options:["Тек соғыс көбейді", "Аумағы кеңейді, ұлттық бірлік күшейді", "Қолөнер дамыды"]}
+  ];
+
+  const infText = `
+    <p><strong>Информатика:</strong> Информатика — ақпаратты жинау, сақтау, өңдеу және тарату туралы ғылым. Ол компьютердің құрылымын, жұмыс істеу принциптерін, программалау мен алгоритмдерді, ақпараттық жүйелерді зерттейді. Информатика пәнінің мақсаты — оқушыларды ақпараттық технологияларды тиімді қолдануға үйрету, алгоритмдік ойлау қабілетін дамыту.</p>
+    <p>Компьютер — ақпаратты өңдеуге, сақтауға және тасымалдауға арналған әмбебап құрылғы. Ол негізгі төрт бөліктен тұрады: жүйелік блок, монитор, пернетақта, тінтуір. Компьютердің басты құрылғыларына процессор, жедел жад (RAM), қатты диск (HDD/SSD) жатады. Процессор — компьютердің "миы", ал жедел жад уақытша ақпаратты сақтайды. Қатты диск — мәліметтердің ұзақ мерзімді сақталуына жауап береді.</p>
+    <p>Алгоритм — қандай да бір есепті шешу үшін орындалатын әрекеттер тізбегі. Программалау тілі — компьютерге бұйрық беретін арнайы тіл. Мысалы, Python, C++, Java. Программалау арқылы әр түрлі есептер шығарып, автоматтандырылған жүйелер құруға болады. Оқушылар информатика сабағында алғашқы алгоритмдерді блок-схема арқылы құрастырып үйренеді, кейін оларды программалау тілінде жүзеге асырады.</p>
+    <p>Компьютерлік желі — бірнеше компьютерді өзара байланыстыратын жүйе. Интернет — әлемдік ауқымдағы ең үлкен компьютерлік желі. Интернетте ақпарат іздеу, электрондық пошта жіберу, әлеуметтік желілерге кіру, онлайн оқыту және тағы басқа мүмкіндіктер бар. Компьютерлік желілер жергілікті (LAN) және ғаламдық (WAN) болып бөлінеді.</p>
+    <p>Ақпарат қауіпсіздігі — ақпаратты рұқсатсыз өзгертуден, ұрлаудан, бұзудан қорғау. Информатикада вирустар, антивирустық программалар, құпия сөздер, жеке деректердің қорғалуы маңызды. Компьютерлік вирустар — зиянды бағдарламалар, олар компьютерге зиян келтіруі мүмкін. Оларды болдырмау үшін антивирустық бағдарламаларды қолдану қажет. Құпия сөздер мен шифрлау деректердің қауіпсіздігін қамтамасыз етеді.</p>
+    <p>Информатиканың мектеп бағдарламасы оқушыларға электрондық кестелер (Excel), мәтіндік редакторлар (Word), презентациялар (PowerPoint) жасауды, графикалық программаларды (Paint) қолдануды, программалау негіздерін меңгеруді үйретеді. Сонымен қатар, интернетте қауіпсіз жұмыс істеу, ақпаратты іздеу және өңдеу дағдылары дамиды.</p>
+    <p>Қазіргі уақытта информатика барлық салаларда маңызды рөл атқарады. Ақпараттық технологиялар денсаулық сақтау, білім беру, экономика, өнеркәсіп, ғылым және күнделікті өмірде кеңінен қолданылады. Информатика — XXI ғасырдың ең өзекті және сұранысқа ие салаларының бірі.</p>
+  `;
+
+  const infQuiz = [
+    {q:"Информатика нені зерттейді?", a:"Ақпаратты жинау, өңдеу және тарату", options:["Тек тарихты", "Ақпаратты жинау, өңдеу және тарату", "Тек биологияны"]},
+    {q:"Компьютердің негізгі құрылғыларына не жатады?", a:"Процессор, RAM, қатты диск", options:["Принтер, сканер", "Процессор, RAM, қатты диск", "Микрофон, колонка"]},
+    {q:"Компьютердің негізгі төрт бөлігі?", a:"Жүйелік блок, монитор, пернетақта, тінтуір", options:["Телефон, планшет, сағат, роутер", "Жүйелік блок, монитор, пернетақта, тінтуір", "Микрофон, камера, телефон, модем"]},
+    {q:"Алгоритм дегеніміз не?", a:"Әрекеттер тізбегі", options:["Файл", "Әрекеттер тізбегі", "Компьютер"]},
+    {q:"Программалау тіліне қайсысы жатады?", a:"Python", options:["Word", "Excel", "Python"]},
+    {q:"Компьютерлік желі деген не?", a:"Бірнеше компьютерді байланыстыратын жүйе", options:["Бір адамға арналған құрылғы", "Бірнеше компьютерді байланыстыратын жүйе", "Тек интернет"]},
+    {q:"Интернет деген не?", a:"Әлемдік компьютерлік желі", options:["Тек Қазақстандағы желі", "Әлемдік компьютерлік желі", "Тек телефонға арналған"]},
+    {q:"Ақпарат қауіпсіздігі нені білдіреді?", a:"Ақпаратты қорғау", options:["Компьютерді өшіру", "Ақпаратты қорғау", "Жаңа программа орнату"]},
+    {q:"Антивирустық программа неге қажет?", a:"Компьютерді вирустардан қорғау", options:["Жаңа ойын орнату", "Компьютерді вирустардан қорғау", "Интернетке қосылу"]},
+    {q:"Құпия сөз не үшін керек?", a:"Ақпаратты қорғау үшін", options:["Компьютерді қосу үшін", "Ақпаратты қорғау үшін", "Принтерді іске қосу үшін"]},
+    {q:"Мәтіндік редактор мысалы?", a:"Word", options:["Word", "Paint", "Excel"]},
+    {q:"Электрондық кесте программасы?", a:"Excel", options:["Excel", "PowerPoint", "Notepad"]},
+    {q:"Презентация жасауға арналған программа?", a:"PowerPoint", options:["Word", "PowerPoint", "Access"]},
+    {q:"Графикалық программа мысалы?", a:"Paint", options:["Paint", "Excel", "Word"]},
+    {q:"RAM деген не?", a:"Жедел жад", options:["Қатты диск", "Жедел жад", "Процессор"]},
+    {q:"Компьютердің ең басты құрылғысы?", a:"Процессор", options:["Монитор", "Процессор", "Тінтуір"]},
+    {q:"Python қандай тіл?", a:"Программалау тілі", options:["Графикалық редактор", "Мәтіндік редактор", "Программалау тілі"]},
+    {q:"Компьютерлік вирустар не істейді?", a:"Зиян келтіреді", options:["Компьютерді жылдамдатады", "Зиян келтіреді", "Жаңартады"]},
+    {q:"Жеке деректерді қорғау не үшін маңызды?", a:"Қауіпсіздік үшін", options:["Ойын ойнау үшін", "Қауіпсіздік үшін", "Тек мәтін жазу үшін"]},
+    {q:"Информатика сабағында не үйренеді?", a:"Программалау, мәтін, кесте, графика", options:["Тек сурет салу", "Программалау, мәтін, кесте, графика", "Тек ән айту"]}
+  ];
+
+  const bioText = `
+    <p><strong>Биология:</strong> Биология — тірі организмдерді, олардың құрылымын, қызметін, дамуын, таралуын, өзара байланысын зерттейтін ғылым. Биология табиғаттың әртүрлі құбылыстарын, жануарлар мен өсімдіктер әлемін, микроағзалар мен адамның өмір процесін зерттеуге бағытталған. Биология пәнінің мақсаты — оқушыларға тірі табиғаттың заңдылықтарын, тіршілік иелерінің ерекшеліктерін түсіндіру.</p>
+    <p>Биологияның негізгі бөлімдеріне ботаника (өсімдіктер туралы ғылым), зоология (жануарлар туралы ғылым), анатомия (организмдердің құрылымы), физиология (организмдердің қызметі), экология (организмдер мен қоршаған ортаның байланысы), генетика (тұқымқуалаушылық пен өзгергіштік) жатады.</p>
+    <p>Өсімдіктер — тірі организмдердің ерекше тобы. Олар фотосинтез арқылы органикалық заттар синтездейді, оттегі бөледі және жер шарындағы тіршіліктің негізі болып табылады. Жануарлар дүниесі алуан түрлі: сүтқоректілер, құстар, бауырымен жорғалаушылар, қосмекенділер, балықтар және омыртқасыздар.</p>
+    <p>Адам биологиясы — адамның құрылымы мен қызметін, оның денсаулығын, ағзалардың өзара байланысын зерттейтін ғылым. Адам ағзасы жасушалардан тұрады. Жасуша — тіршіліктің ең кішкентай бірлігі. Барлық тірі ағзалар жасушалардан құралған. Олар тыныс алады, қоректенеді, өседі, көбейеді және сыртқы ортаға бейімделеді.</p>
+    <p>Генетика — тұқымқуалаушылық пен өзгергіштікті зерттейді. Қоршаған орта факторлары мен гендердің өзара әсері ағзалардың бейімделуін қамтамасыз етеді. Экология — тірі организмдер мен олардың ортасының өзара байланысын, табиғи тепе-теңдікті сақтаудың маңызын түсіндіреді.</p>
+    <p>Биология — денсаулық сақтау, ауыл шаруашылығы, медицина, экология, биотехнология сияқты көптеген салаларда маңызды рөл атқарады. Орта мектепте биология сабағында оқушылар тірі табиғаттың алуан түрлілігі, ағзалардың құрылысы мен қызметі, табиғаттағы зат айналымы, экологиялық тепе-теңдік, адам денсаулығы жайлы білім алады.</p>
+  `;
+
+  const bioQuiz = [
+    {q:"Биология нені зерттейді?", a:"Тірі организмдерді", options:["Ғарышты", "Тірі организмдерді", "Тау жыныстарын"]},
+    {q:"Биологияның негізгі бөлімдерінің бірі?", a:"Ботаника", options:["Астрономия", "Ботаника", "География"]},
+    {q:"Жануарлар дүниесінің негізгі топтарының бірі?", a:"Сүтқоректілер", options:["Өсімдіктер", "Сүтқоректілер", "Бактериялар"]},
+    {q:"Фотосинтез қай ағзаларда жүреді?", a:"Өсімдіктерде", options:["Жануарларда", "Өсімдіктерде", "Саңырауқұлақтарда"]},
+    {q:"Жасуша деген не?", a:"Тіршіліктің ең кіші бірлігі", options:["Орган", "Тіршіліктің ең кіші бірлігі", "Молекула"]},
+    {q:"Генетика нені зерттейді?", a:"Тұқымқуалаушылық пен өзгергіштікті", options:["Жер қабатын", "Тұқымқуалаушылық пен өзгергіштікті", "Климатты"]},
+    {q:"Экология нені зерттейді?", a:"Организмдер мен ортаның байланысын", options:["Адамның құрылысын", "Организмдер мен ортаның байланысын", "Математикалық заңдарды"]},
+    {q:"Адам ағзасының ең кіші құрылымдық бірлігі?", a:"Жасуша", options:["Орган", "Жасуша", "Ұлпа"]},
+    {q:"Физиология нені зерттейді?", a:"Организмдердің қызметін", options:["Жасушаның бөлімін", "Организмдердің қызметін", "Судың құрамын"]},
+    {q:"ДНҚ қайда орналасқан?", a:"Жасуша ядросында", options:["Цитоплазмада", "Жасуша қабығында", "Жасуша ядросында"]},
+    {q:"Адам ағзасында қанша жүйе бар?", a:"11", options:["5", "7", "11"]},
+    {q:"Өсімдіктердің негізгі органдары?", a:"Тамыр, сабақ, жапырақ", options:["Қан, жүрек, өкпе", "Тамыр, сабақ, жапырақ", "Қабық, ядро, цитоплазма"]},
+    {q:"Сүтқоректілерге тән белгі?", a:"Сүтпен қоректендіру", options:["Жапырақ болуы", "Сүтпен қоректендіру", "Көп аяқтылық"]},
+    {q:"Тыныс алу қай ағзада жүреді?", a:"Барлық тірі ағзада", options:["Тек адамда", "Тек өсімдікте", "Барлық тірі ағзада"]},
+    {q:"Адамда жүрек қай жүйеге жатады?", a:"Қанайналым жүйесіне", options:["Тыныс алу жүйесіне", "Қанайналым жүйесіне", "Ас қорыту жүйесіне"]},
+    {q:"Клетка қабығы қайда кездеседі?", a:"Өсімдікте", options:["Жануарда", "Өсімдікте", "Бактерияда"]},
+    {q:"Организмдердің қоршаған ортаға бейімделуі не деп аталады?", a:"Бейімделу", options:["Фотосинтез", "Бейімделу", "Тұқымқуалаушылық"]},
+    {q:"Адам биологиясы нені зерттейді?", a:"Адам ағзасы мен қызметін", options:["Климатты", "Адам ағзасы мен қызметін", "Өсімдіктерді"]},
+    {q:"Экологияның маңызы неде?", a:"Табиғаттағы тепе-теңдікті сақтау", options:["Су табу", "Табиғаттағы тепе-теңдікті сақтау", "Ауа райын болжау"]},
+    {q:"Биология қай салаларда маңызды?", a:"Медицина, ауыл шаруашылығы, экология", options:["Физика, математика", "Медицина, ауыл шаруашылығы, экология", "Тарих, өнер"]}
+  ];
+
+  const mathText = `
+    <p><strong>Математика:</strong> Математика — сандар, шамалар, функциялар, теңдеулер, құрылымдар және олардың арасындағы заңдылықтар мен қатынастарды зерттейтін ғылым. Математика — барлық жаратылыстану және техникалық ғылымдардың негізі. Математиканың негізгі бөлімдеріне арифметика, алгебра, геометрия, тригонометрия, математикалық анализ, статистика және комбинаторика жатады.</p>
+    <p>Алгебра — сандар мен әріптерді қолданып, өрнектерді, теңдеулерді, теңсіздіктерді, функцияларды зерттейтін бөлім. Алгебра логикалық ойлау, формулалармен жұмыс істеу және күрделі есептерді шығару үшін аса маңызды. Алгебралық амалдарға өрнектерді түрлендіру, квадрат және куб түбірлерін, бөлшекті өрнектерді ықшамдау, көпмүше мен бөлшек функцияларды зерттеу, теңдеулер мен теңсіздіктер жүйесін шешу кіреді.</p>
+    <p>Функция — әр айнымалы мәніне бір ғана мән сәйкес келетін ереже. Функцияның графигі, қасиеттері (өсуі, кемуі, экстремумдары), облысы мен мәндер жиыны, түрлендірулері (трансляция, созу, қысу) зерттеледі. Көп таралған функциялар: сызықтық, квадраттық, түбірлік, бөлшекті, экспоненциал және логарифмдік функциялар.</p>
+    <p>Теңдеу — белгісізді табу үшін құрастырылған математикалық өрнек. Мысалы, сызықтық теңдеу ax+b=0, квадраттық теңдеу ax^2+bx+c=0, модульдік, бөлшекті және параметрлі теңдеулер. Теңдеулер жүйесі бірнеше айнымалы мен бірнеше теңдеуден тұрады.</p>
+    <p>Математикалық амалдарға бөлшектер мен ондық бөлшектермен амалдар, пайыз, пропорция, арифметикалық және геометриялық прогрессия, бөлінгіштік, ең кіші ортақ еселік (ЕКОЕ), ең үлкен ортақ бөлгіш (ЕҮОБ), логарифм және көрсеткіштік өрнектер, т.б. жатады.</p>
+    <p>Математика сабағында оқушылар есеп шығару, формулаларды қолдану, теңдеулер мен теңсіздіктерді шешу, функцияларды зерттеу, мәтіндік және қолданбалы есептерді шешу дағдыларын меңгереді. Математикалық ойлау — логика, анализ, дәлелдеу, құрылым, абстракция және аналитикалық қабілетті дамытады.</p>
+    <p>Математика — күнделікті өмірде, экономикада, техникада, ғылымда кеңінен қолданылады. Қиын және қызықты есептерді шығару арқылы оқушылар өз білімін тереңдетеді және шығармашылық қабілетін дамытады.</p>
+  `;
+
+  const mathQuiz = [
+    {q:"Өрнекті ықшамдаңыз: 3x + 2x - x", a:"4x", options:["5x", "6x", "4x"]},
+    {q:"2x - 5 = 9 теңдеуін шешіңіз", a:"x=7", options:["x=4", "x=7", "x=2"]},
+    {q:"Квадрат түбір: √81", a:"9", options:["8", "9", "6"]},
+    {q:"Квадраттық теңдеу: x^2 - 4x + 3 = 0 түбірлері", a:"x=1 немесе x=3", options:["x=2 немесе x=3", "x=1 немесе x=3", "x=1 немесе x=4"]},
+    {q:"Бөлшекті ықшамдаңыз: (2x^2)/(4x)", a:"x/2", options:["x/2", "2x", "x^2/2"]},
+    {q:"Функцияның анықталу облысы: f(x)=1/(x-2)", a:"x≠2", options:["x≠0", "x≠2", "x≥0"]},
+    {q:"Логарифм: log₂8", a:"3", options:["2", "3", "8"]},
+    {q:"Пайыз: 40-тың 25%-ы", a:"10", options:["8", "10", "12"]},
+    {q:"Арифметикалық прогрессияда a₁=2, d=3, a₅=?", a:"14", options:["11", "14", "17"]},
+    {q:"x^2=25 теңдеуінің шешімі", a:"x=5 немесе x=-5", options:["x=5", "x=5 немесе x=-5", "x=-5"]},
+    {q:"Куб саны: 3^3", a:"27", options:["9", "27", "18"]},
+    {q:"Бөлінгіштік: 135 саны 5-ке бөлінеді ме?", a:"Иә", options:["Иә", "Жоқ", "Тек 3-ке"]},
+    {q:"Экспоненциалдық функция: 2^4", a:"16", options:["8", "16", "24"]},
+    {q:"Модуль: |−12|", a:"12", options:["-12", "12", "0"]},
+    {q:"Функцияның мәні: f(x)=2x+5, x=3", a:"11", options:["8", "11", "13"]},
+    {q:"Квадраттық теңдеудің дискриминанты: x^2 + 6x + 9 = 0", a:"0", options:["3", "0", "6"]},
+    {q:"Теңсіздік: 3x > 12, x=?", a:"x>4", options:["x>3", "x>4", "x>5"]},
+    {q:"Бөлшек: 7/21 ықшамдаңыз", a:"1/3", options:["1/2", "1/3", "1/4"]},
+    {q:"Қандай x үшін: 2/(x-1)=4, x=?", a:"x=1.5", options:["x=2", "x=1.5", "x=3"]},
+    {q:"log₁₀(1000) неге тең?", a:"3", options:["2", "3", "10"]}
+  ];
+
+  let currentSubject = 'history'; // 'history', 'informatics', 'biology', 'mathematics'
+
+  // Кіру/тіркелу формаларын ауыстыру функциясы
+  function showAuthTab(tab) {
+    document.getElementById('loginForm').style.display = (tab === 'login') ? 'block' : 'none';
+    document.getElementById('registerForm').style.display = (tab === 'register') ? 'block' : 'none';
+    document.getElementById('loginTab').classList.toggle('active', tab === 'login');
+    document.getElementById('registerTab').classList.toggle('active', tab === 'register');
+  }
+
+  // Негізгі бөлімдегі вкладкаларды (Профиль/Тест-Анкета) ауыстыру
+  function showTab(tab) {
+    document.getElementById('profileSection').style.display = (tab === 'profile') ? 'block' : 'none';
+    document.getElementById('quizSection').style.display = (tab === 'quiz') ? 'block' : 'none';
+    document.getElementById('profileTab').classList.toggle('active', tab === 'profile');
+    document.getElementById('quizTab').classList.toggle('active', tab === 'quiz');
+
+    if (tab === 'quiz') {
+        showFormTab('quiz'); // Тест/Анкета вкладкасына өткенде әдепкіде тестті көрсету
+    }
+     if (tab === 'profile') {
+        if (localStorage.getItem('currentUser')) {
+             updateProfile(); // Профильге өткенде ақпаратты жаңарту (егер кірген болса)
+        }
+    }
+  }
+
+  // Тест немесе Анкета формасын көрсету
+  function showFormTab(formType) {
+    document.getElementById('quizTestSection').style.display = (formType === 'quiz') ? 'block' : 'none';
+    document.getElementById('quizFormSection').style.display = (formType === 'form') ? 'block' : 'none';
+    document.getElementById('quizTestTab').classList.toggle('active', formType === 'quiz');
+    document.getElementById('quizFormTab').classList.toggle('active', formType === 'form');
+    if (formType === 'form') {
+        renderOpenForm(); // Анкета таңдалғанда сұрақтарды жүктеу
+    }
+  }
+
+  function switchSubject(subject) {
+    currentSubject = subject;
+    document.getElementById('historySubject').classList.toggle('active', subject === 'history');
+    document.getElementById('infSubject').classList.toggle('active', subject === 'informatics');
+    document.getElementById('bioSubject').classList.toggle('active', subject === 'biology');
+    document.getElementById('mathSubject').classList.toggle('active', subject === 'mathematics');
+
+    let title = '';
+    let textContent = '';
+    if (subject === 'history') {
+        title = 'Қазақ хандығы';
+        textContent = historyText;
+    } else if (subject === 'informatics') {
+        title = 'Информатика';
+        textContent = infText;
+    } else if (subject === 'biology') {
+        title = 'Биология';
+        textContent = bioText;
+    } else if (subject === 'mathematics') {
+        title = 'Математика';
+        textContent = mathText;
+    }
+    document.getElementById('subjectTitle').innerText = title;
+    document.getElementById('subjectText').innerHTML = textContent;
+
+    renderQuiz(); // Тест сұрақтарын жүктеу
+    if (localStorage.getItem('currentUser')) {
+        updateProfile(); // Профильді жаңарту (егер кірген болса)
+    }
+    document.getElementById('result').style.display = 'none'; // Нәтиже блогын жасыру
+    document.getElementById('formSuccess').style.display = 'none'; // Сәттілік хабарын жасыру
+    showFormTab('quiz'); // Пәнді ауыстырғанда әдепкіде тестті көрсету
+  }
+
+  function register() {
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const confirm = document.getElementById('regConfirm').value;
+
+    if (!username || !password || !confirm) {
+        alert("Барлық өрістерді толтырыңыз!");
+        return;
+    }
+    if (password.length < 4) { // Құпия сөз ұзындығын тексеру
+        alert("Құпия сөз кемінде 4 таңбадан тұруы керек!");
+        return;
+    }
+    if (password !== confirm) {
+        alert("Құпия сөздер сәйкес емес!");
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem('users') || '{}');
+    if (users[username]) {
+        alert("Бұл қолданушы аты тіркелген!");
+        return;
+    }
+
+    users[username] = {
+        password, // Қауіпсіздік үшін бұл жерде хэштеу керек (нақты жобада)
+        history: { history: [], informatics: [], biology: [], mathematics: [] },
+        openFormHistory: { history: [], informatics: [], biology: [], mathematics: [] }
+    };
+    localStorage.setItem('users', JSON.stringify(users));
+    alert("Сәтті тіркелдіңіз! Енді жүйеге кіре аласыз.");
+    document.getElementById('regUsername').value = '';
+    document.getElementById('regPassword').value = '';
+    document.getElementById('regConfirm').value = '';
+    showAuthTab('login');
+  }
+
+  function login() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    if (!username || !password) {
+        alert("Атыңыз бен құпия сөзді енгізіңіз!");
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem('users') || '{}');
+    if (!users[username] || users[username].password !== password) { // Қауіпсіздік үшін хэштелген құпия сөзді салыстыру керек (нақты жобада)
+      alert("Қате логин немесе құпия сөз!");
+      return;
+    }
+    localStorage.setItem('currentUser', username);
+    document.getElementById('loginUsername').value = '';
+    document.getElementById('loginPassword').value = '';
+    init();
+  }
+
+  function init() {
+    document.getElementById('mainSection').style.display = 'block';
+    document.getElementById('authSection').style.display = 'none';
+    // currentSubject 'history' болып инициализацияланған.
+    switchSubject(currentSubject); // Әдепкі пәнді орнату және тиісті мазмұнды көрсету
+    showTab('profile'); // Әдепкіде профильді көрсету
+  }
+
+  function renderQuiz() {
+    const quizForm = document.getElementById('quizForm');
+    if (!quizForm) return;
+    let quizData;
+    if (currentSubject === 'history') quizData = historyQuiz;
+    else if (currentSubject === 'informatics') quizData = infQuiz;
+    else if (currentSubject === 'biology') quizData = bioQuiz;
+    else if (currentSubject === 'mathematics') quizData = mathQuiz;
+    else quizData = []; // Егер пән табылмаса
+
+    quizForm.innerHTML = quizData.map((item, index) => `
+      <div class="question">
+        <p><strong>${index + 1}. ${item.q}</strong></p>
+        ${item.options.map(option => `
+          <label>
+            <input type="radio" name="question${index}" value="${option}">
+            ${option}
+          </label><br>
+        `).join('')}
+      </div>
+    `).join('');
+  }
+
+  const openFormQuestions = {
+    history: [
+      "Қазақ хандығының құрылуының тарихи мәні неде?",
+      "Қазақ хандығының алғашқы астанасы қай жерде болды және ол неге маңызды?",
+      "Қасым ханның реформалары туралы не білесіз?",
+      "XV-XVII ғасырлардағы қазақ-жоңғар қатынасының ерекшеліктерін сипаттаңыз.",
+      "Абылай ханның қазақ тарихындағы рөлін жазыңыз.",
+      "Қазақстанның тәуелсіздік алуына алып келген негізгі себептер қандай?",
+      "Тарихи тұлға ретінде Кенесары Қасымұлы туралы не білесіз?",
+      "Қазақ хандығының заң жүйесіне сипаттама беріңіз.",
+      "Қазақстан аумағындағы маңызды тарихи ескерткіштердің бірін атаңыз және сипаттаңыз.",
+      "Қазақ халқының ұлттық бірлігінің қалыптасуындағы басты факторларды жазыңыз."
+    ],
+    informatics: [
+      "Компьютердің негізгі құрылғыларын атаңыз және олардың қызметін сипаттаңыз.",
+      "Алгоритм дегеніміз не? Өмірден мысал келтіріңіз.",
+      "Программалау тілдерін атаңыз және олардың айырмашылығын жазыңыз.",
+      "Компьютерлік желінің маңызы қандай?",
+      "Ақпараттық қауіпсіздік дегеніміз не? Жеке деректерді қалай қорғай аласыз?",
+      "Мәтіндік редактор мен электрондық кесте бағдарламаларының айырмашылығы неде?",
+      "Интернеттің қоғамдағы рөлі мен әсерін сипаттаңыз.",
+      "Компьютерлік вирустардың түрлері және олардан қорғану жолдарын жазыңыз.",
+      "Жасанды интеллект ұғымы туралы не білесіз?",
+      "Ақпаратты кодтау және шифрлау дегеніміз не?"
+    ],
+    biology: [
+      "Жасуша құрылымының негізгі бөліктерін атаңыз және олардың қызметін сипаттаңыз.",
+      "Фотосинтез процесін сипаттаңыз және оның маңызын түсіндіріңіз.",
+      "Адам ағзасының негізгі жүйелерін атаңыз және олардың қызметін сипаттаңыз.",
+      "Тұқымқуалаушылық пен өзгергіштік ұғымдарына мысал келтіріңіз.",
+      "Экология ұғымын анықтаңыз және оның қоғамдағы рөлін сипаттаңыз.",
+      "Өсімдіктер мен жануарлардың бейімделу ерекшеліктері туралы өз ойыңызды жазыңыз.",
+      "Биосфера және оның құрамдас бөліктері туралы не білесіз?",
+      "Генетикалық инженерия туралы өз пікіріңізді жазыңыз.",
+      "Адамның денсаулығын сақтау үшін қандай ережелерді сақтау қажет?",
+      "Биология ғылымының қазіргі қоғамдағы маңызы қандай деп ойлайсыз?"
+    ],
+    mathematics: [
+      "Сызықтық және квадраттық теңдеулердің айырмашылығы неде?",
+      "Математикада функция ұғымын түсіндіріңіз және өмірден мысал келтіріңіз.",
+      "Пропорция және пайыз ұғымдарын күнделікті өмірде қалай қолдануға болады?",
+      "Ондық бөлшектермен амалдар жүргізудің маңызы неде?",
+      "Арифметикалық және геометриялық прогрессиялардың айырмашылығын сипаттаңыз.",
+      "Математикадағы логика және оның мәні туралы өз ойыңызды жазыңыз.",
+      "Бөлшектермен амалдар жүргізу үшін қандай ережелерді білу керек?",
+      "Теңсіздік ұғымын түсіндіріңіз және мысал келтіріңіз.",
+      "Квадрат түбір деген не және ол қайда қолданылады?",
+      "Математикалық модельдеу не үшін қажет?"
+    ]
+  };
+
+  function renderOpenForm() {
+    const openFormDiv = document.getElementById('openFormQuestions');
+    if (!openFormDiv) return;
+    const questions = openFormQuestions[currentSubject];
+    if (!questions) {
+        openFormDiv.innerHTML = "<p>Бұл пән бойынша анкета сұрақтары әзірге жоқ.</p>";
+        return;
+    }
+    openFormDiv.innerHTML = questions.map((q, i) =>
+      `<div>
+         <label for="openFormQ${i}">${i + 1}. ${q}</label>
+         <textarea id="openFormQ${i}" name="openFormQ${i}" rows="3" required></textarea>
+       </div>`
+    ).join('');
+  }
+
+  function submitOpenForm() {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+        alert("Жауапты сақтау үшін жүйеге кіріңіз!");
+        return;
+    }
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    const user = users[currentUser];
+    if (!user) {
+        alert("Пайдаланушы табылмады!");
+        return;
+    }
+
+    const form = document.getElementById('openForm');
+    const questions = openFormQuestions[currentSubject];
+    let answers = [];
+    let allAnswered = true;
+    for (let i = 0; i < questions.length; i++) {
+      const textArea = form.elements[`openFormQ${i}`];
+      if (!textArea) continue;
+      const val = textArea.value.trim();
+      if (!val) {
+        allAnswered = false; // Ескерту: бос жауаптарды қабылдамаймыз
+      }
+      answers.push({ q: questions[i], a: val });
+    }
+
+    if (!allAnswered) {
+      alert("Барлық сұрақтарға жауап беріңіз!");
+      return;
+    }
+
+    if (!user.openFormHistory) user.openFormHistory = {};
+    if (!user.openFormHistory[currentSubject]) user.openFormHistory[currentSubject] = [];
+
+    user.openFormHistory[currentSubject].push({
+      date: new Date().toLocaleString('kk-KZ'),
+      answers
+    });
+    localStorage.setItem('users', JSON.stringify(users));
+    form.reset();
+    document.getElementById('formSuccess').style.display = 'block';
+    if (localStorage.getItem('currentUser')) {
+        updateProfile();
+    }
+  }
+
+  function updateProfile() {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) return;
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    const user = users[currentUser];
+    if (!user) return;
+
+    let subjKey = currentSubject;
+    let subjectDisplayName = '';
+    if (currentSubject === 'history') subjectDisplayName = 'Қазақстан тарихы';
+    else if (currentSubject === 'informatics') subjectDisplayName = 'Информатика';
+    else if (currentSubject === 'biology') subjectDisplayName = 'Биология';
+    else if (currentSubject === 'mathematics') subjectDisplayName = 'Математика';
+
+    document.getElementById('profileInfo').innerHTML = `
+      <p><strong>Атыңыз:</strong> ${currentUser}</p>
+      <p><strong>Ағымдағы пән:</strong> ${subjectDisplayName} (нәтижелер осы пән бойынша көрсетіледі)</p>
+    `;
+
+    let profileHistoryHtml = '<h3>Тест нәтижелері (' + subjectDisplayName + '):</h3>';
+    const subjectQuizHistory = user.history && user.history[subjKey] ? user.history[subjKey] : [];
+    if (subjectQuizHistory.length > 0) {
+        profileHistoryHtml += '<ul>' + subjectQuizHistory.map(test => `<li><strong>${test.name}:</strong> ${test.score}/${test.total} балл (<em>${test.date}</em>)</li>`).join('') + '</ul>';
+    } else {
+        profileHistoryHtml += "<p>Бұл пән бойынша тест нәтижелері әзірге жоқ.</p>";
+    }
+
+    profileHistoryHtml += '<h3>Анкета жауаптары (' + subjectDisplayName + '):</h3>';
+    const subjectOpenFormHistory = user.openFormHistory && user.openFormHistory[subjKey] ? user.openFormHistory[subjKey] : [];
+    if (subjectOpenFormHistory.length > 0) {
+        subjectOpenFormHistory.forEach(entry => {
+            profileHistoryHtml += `<p><strong>Жіберілген күні:</strong> <em>${entry.date}</em></p><ul>`;
+            entry.answers.forEach(ans => {
+                profileHistoryHtml += `<li><strong>Сұрақ:</strong> ${ans.q}<br><strong>Сіздің жауабыңыз:</strong> ${ans.a || "Жауап берілмеген"}</li>`;
+            });
+            profileHistoryHtml += `</ul>`;
+        });
+    } else {
+        profileHistoryHtml += "<p>Бұл пән бойынша анкета жауаптары әзірге жоқ.</p>";
+    }
+    document.getElementById('history').innerHTML = profileHistoryHtml;
+  }
+
+  function checkAnswers() {
+    let quizData;
+    if (currentSubject === 'history') quizData = historyQuiz;
+    else if (currentSubject === 'informatics') quizData = infQuiz;
+    else if (currentSubject === 'biology') quizData = bioQuiz;
+    else if (currentSubject === 'mathematics') quizData = mathQuiz;
+    else return; // Егер пән анықталмаса
+
+    const form = document.getElementById('quizForm');
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+        alert("Нәтижені сақтау үшін жүйеге кіріңіз!");
+        return;
+    }
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    const user = users[currentUser];
+    if (!user) {
+        alert("Пайдаланушы табылмады!");
+        return;
+    }
+
+    let score = 0;
+    let allAnswered = true;
+    for(let i=0; i < quizData.length; i++){
+        if(!document.querySelector(`input[name="question${i}"]:checked`)){
+            allAnswered = false;
+            break;
+        }
+    }
+
+    if(!allAnswered){
+        alert("Тесттің барлық сұрақтарына жауап беріңіз!");
+        return;
+    }
+
+    quizData.forEach((item, index) => {
+      const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+      if (selectedOption && selectedOption.value === item.a) {
+        score++;
+      }
+    });
+
+    const resultDiv = document.getElementById('result');
+    resultDiv.style.display = 'block';
+    resultDiv.innerText = `Сіз ${quizData.length} сұрақтың ${score} сұрағына дұрыс жауап бердіңіз!`;
+
+    if (score >= quizData.length * 0.75) { // 75% дұрыс жауап - сәтті
+      resultDiv.className = 'result success';
+    } else {
+      resultDiv.className = 'result fail';
+    }
+
+    let subjKey = currentSubject;
+    let testName = '';
+    if (currentSubject === 'history') testName = 'Қазақстан тарихы';
+    else if (currentSubject === 'informatics') testName = 'Информатика';
+    else if (currentSubject === 'biology') testName = 'Биология';
+    else if (currentSubject === 'mathematics') testName = 'Математика';
+    testName += " тесті";
+
+
+    if (!user.history) user.history = {};
+    if (!user.history[subjKey]) user.history[subjKey] = [];
+
+    user.history[subjKey].push({
+      name: testName,
+      score: score,
+      total: quizData.length,
+      date: new Date().toLocaleString('kk-KZ')
+    });
+    localStorage.setItem('users', JSON.stringify(users));
+    if (localStorage.getItem('currentUser')) {
+         updateProfile();
+    }
+  }
+
+  window.onload = function() {
+    if (localStorage.getItem('currentUser')) {
+        init();
+    } else {
+        document.getElementById('authSection').style.display = 'flex';
+        document.getElementById('mainSection').style.display = 'none';
+        showAuthTab('login');
+    }
+  };
+</script>
+</body>
+</html>
